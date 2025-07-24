@@ -48,14 +48,14 @@ def GetWeatherHistory():
     conn=GetConnection()
     cursor=conn.cursor()
     city=request.args.get("city")
-    days=request.args.get("days")
+    days=int(request.args.get("days"))
     cursor.execute("select * from weather where city=?",(city,))
     all_cities_weather=cursor.fetchall()
     all_cities_weather=filter(lambda row: NumberOfDays(row["created_at"])<=days, all_cities_weather)
     return list(dict(row) for row in all_cities_weather)
 
 @weather_bp.route("/weather/<int:post_id>",methods=["DELETE"])
-def DeleteQuestion(post_id):
+def DeleteWeather(post_id):
     conn=GetConnection()
     cursor=conn.cursor()
     cursor.execute("delete from posted_user_map where post_id=?", (post_id,))
