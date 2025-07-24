@@ -79,3 +79,30 @@ def GetUserPosts():
         fetchone=cursor.fetchone()
         lst.append(dict(fetchone))
     return lst
+
+@weather_bp.route("/TopHot",methods=["GET"])
+def GetTopHot():
+    conn=GetConnection()
+    cursor=conn.cursor()
+    cursor.execute("select * from weather order by temperature DESC")
+    lst=cursor.fetchmany(5)
+    conn.close()
+    return list(dict(row) for row in lst)
+
+
+@weather_bp.route("/TopCold",methods=["GET"])
+def GetTopCold():
+    conn=GetConnection()
+    cursor=conn.cursor()
+    cursor.execute("select * from weather order by temperature ASC")
+    lst=cursor.fetchmany(5)
+    conn.close()
+    return list(dict(row) for row in lst)
+
+@weather_bp.route("/avgtmp",methods=["GET"])
+def GetAverageTemp():
+    conn=GetConnection()
+    cursor=conn.cursor()
+    cursor.execute("select city,AVG(temperature) as 'Average Temperature' from weather where created_at >= datetime('now', '-1 day') GROUP BY city ORDER BY city ASC")
+    lst=cursor.fetchall()
+    return list(dict(row) for row in lst)
